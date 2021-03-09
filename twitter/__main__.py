@@ -2,6 +2,7 @@ import logging
 
 import tweepy
 from latimes.config import LatimesConfiguration, DEFAULT_VALUES
+from latimes.exceptions import InvalidTimeStringException
 from latimes.latimes import convert_times
 
 from twitter.config import create_api
@@ -27,15 +28,24 @@ class MentionsListener(tweepy.StreamListener):
 
         configuration = LatimesConfiguration.from_dict(DEFAULT_VALUES)
 
-        reply = convert_times(
-            text,
-            configuration
-        )
+        try:
+            reply = convert_times(
+                text,
+                configuration
+            )
 
-        self.api.update_status(
-            status=f"@{tweet.user.screen_name} {reply}",
-            in_reply_to_status_id=tweet.id,
-        )
+
+            self.api.update_status(
+                status=f"@{tweet.user.screen_name} {reply}",
+                in_reply_to_status_id=tweet.id,
+            )
+
+        except InvalidTimeStringException:
+            logger.error(f"Error while trying to convert  {text}")
+            self.api.update_status(
+                status=f"@{tweet.user.screen_name} ¡ooops! no entendí tu tuit",
+                in_reply_to_status_id=tweet.id,
+            )
 
     def on_error(self, status):
         logger.error(status)
