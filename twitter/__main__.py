@@ -24,7 +24,7 @@ class MentionsListener(tweepy.StreamListener):
         if not tweet.text.lower().startswith("@tzconvert"):
             return
 
-        text = tweet.text[len("@tzconvert"):].strip()
+        text = tweet.text[len("@tzconvert"):].strip().lower()
 
         configuration = LatimesConfiguration.from_dict(DEFAULT_VALUES)
 
@@ -34,13 +34,12 @@ class MentionsListener(tweepy.StreamListener):
                 configuration
             )
 
-
             self.api.update_status(
                 status=f"@{tweet.user.screen_name} {reply}",
                 in_reply_to_status_id=tweet.id,
             )
 
-        except InvalidTimeStringException:
+        except:
             logger.error(f"Error while trying to convert  {text}")
             self.api.update_status(
                 status=f"@{tweet.user.screen_name} ¡ooops! no entendí tu tuit",
