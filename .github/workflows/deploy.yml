@@ -10,6 +10,38 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Setup environment
+        run: |
+          curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+          source $HOME/.poetry/env
+          poetry --version
+
+      - name: Install dependencies
+        run: |
+          source $HOME/.poetry/env
+          poetry --version
+          poetry install
+
+      - name: Lint
+        run: |
+          source $HOME/.poetry/env
+          make lint
+
+      - name: Test
+        run: |
+          source $HOME/.poetry/env
+          make test
+
+      - name: Test
+        run: |
+          source $HOME/.poetry/env
+          poetry export -f requirements.txt --output requirements.txt
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:

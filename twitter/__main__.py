@@ -1,11 +1,9 @@
 import logging
 
 import tweepy
-from latimes.config import LatimesConfiguration, DEFAULT_VALUES
-from latimes.exceptions import InvalidTimeStringException
-from latimes.latimes import convert_times
 
 from twitter.config import create_api
+from twitter.reply_builder import parse_tweet
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -24,23 +22,15 @@ class MentionsListener(tweepy.StreamListener):
         if not tweet.text.lower().startswith("@tzconvert"):
             return
 
-        text = tweet.text[len("@tzconvert"):].strip().lower()
-
-        configuration = LatimesConfiguration.from_dict(DEFAULT_VALUES)
-
         try:
-            reply = convert_times(
-                text,
-                configuration
-            )
-
+            reply = parse_tweet(tweet.text)
             self.api.update_status(
                 status=f"@{tweet.user.screen_name} {reply}",
                 in_reply_to_status_id=tweet.id,
             )
 
         except:
-            logger.error(f"Error while trying to convert  {text}")
+            logger.error(f"Error while trying to interpret {tweet.text}")
             self.api.update_status(
                 status=f"@{tweet.user.screen_name} ¡ooops! no entendí tu tuit",
                 in_reply_to_status_id=tweet.id,

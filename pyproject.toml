@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "latimes-twitter"
+version = "0.1.0"
+description = ""
+authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+tweepy = "^3.10.0"
+latimes = "^0.3.0"
+emoji-country-flag = "^1.2.3"
+
+[tool.poetry.dev-dependencies]
+black = {version = "^20.8b1", allow-prereleases = true}
+freezegun = "^1.1.0"
+isort = "^5.7.0"
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
